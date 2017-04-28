@@ -4,6 +4,7 @@
 public class main {
     public static void main(String[] args) {
         System.out.print("testing git");
-        System.out.println();
+        System.out.println("another one");
+
     }
 }
