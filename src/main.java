@@ -13,6 +13,13 @@ public class main {
         int totDataReadMisses;
         int totDataWriteMisses;
         int numDataMisses;
+        int dirtyDataReadMisses;
+        int dirtyWriteMisses;
+        int bytesReadFrmMem;
+        int bytesWrittenToMem;
+        int totReadAccessTime;
+        int totWriteAccessTime;
+        int overallDataCacheMissRate;
 
 
         String path = args[0];                                              //taking arguments as the file path
@@ -23,7 +30,7 @@ public class main {
             String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
 
             if (lineSplit[1].equals("W")) {                                //if 2nd element W then count write else-
-                dataWrites++;                                              //-count read 
+                dataWrites++;                                              //-count read
             } else {
                 dataReads++;
             }
