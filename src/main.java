@@ -7,12 +7,12 @@ import java.util.Scanner;
  */
 public class main {
     public static void main(String[] args) throws IOException {
-       int dataReads,
-            dataWrites,
-            dataAccess,
-            totDataReadMisses,
-            totDataWriteMisses,
-            numDataMisses;
+        int dataReads = 0;
+        int dataWrites = 0;
+        int dataAccess;
+        int totDataReadMisses;
+        int totDataWriteMisses;
+        int numDataMisses;
 
 
         String path = args[0];                                              //taking arguments as the file path
@@ -21,13 +21,22 @@ public class main {
 
         while (txtFile.hasNext()) {
             String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
-            for(int i = 0; i < lineSplit.length; i++) {
-                System.out.println(lineSplit[i]);
-            }
 
+            if (lineSplit[1].equals("W")) {                                //if 2nd element W then count write else-
+                dataWrites++;                                              //-count read 
+            } else {
+                dataReads++;
+            }
+           /* for(int i = 0; i < lineSplit.length; i++) {
+                System.out.println(lineSplit[i]);
+            }*/
         }
 
+        dataAccess = dataReads + dataWrites;
 
+        System.out.println("number of data reads:\t\t" + dataReads
+                + "\nnumber of data writes:\t\t" + dataWrites
+                + "\nnumber of accesses:\t\t\t" + dataAccess);
 
     }
 }
