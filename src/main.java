@@ -1,4 +1,4 @@
-import java.io.File;
+import java.io.*;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -15,16 +15,16 @@ public class main {
             numDataMisses;
 
 
-        String path = args[0];                          //taking arguments as the file path
-        Scanner txtFile = new Scanner(new File(path));  //put the file to be scanned
+        String path = args[0];                                              //taking arguments as the file path
+        Scanner txtFile = new Scanner(new File(path));                      //put the file to be scanned
 
 
         while (txtFile.hasNext()) {
-            String[] lineSplit = txtFile.nextLine().split(" :");
+            String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
             for(int i = 0; i < lineSplit.length; i++) {
-                System.out.println(lineSplit[i] + " ");
+                System.out.println(lineSplit[i]);
             }
-            
+
         }
 
 
