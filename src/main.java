@@ -56,10 +56,13 @@ public class main {
 
             tempString = lineSplit[2].substring(2);
             tempLine = new line(hexToBinary(tempString), offset, numIndexes, tagBits);
-            System.out.println(hexToBinary(tempString));
+            //todo: add conditional statements to add and compare indexes and tags to the line below
+            cache.add(tempLine);
+
+            /*System.out.println(hexToBinary(tempString));
 
             System.out.println(tempLine.getIndexBin());
-            System.out.println(tempLine.getTagBin());
+            System.out.println(tempLine.getTagBin());*/
 
 
             /*System.out.println(lineSplit[2].substring(2));
