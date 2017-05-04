@@ -14,25 +14,24 @@ public class main {
         int byteBlocks = 16;
         int bitMemAddress = 32;
         int offset;
-        int totDataReadMisses;
-        int totDataWriteMisses;
-        int numDataMisses;
-        int dirtyDataReadMisses;
-        int dirtyWriteMisses;
-        int bytesReadFrmMem;
-        int bytesWrittenToMem;
+        int totDataReadMisses = 0;
+        int totDataWriteMisses = 0;
+        int totalMisses;
+        int dirtyReadMisses = 0;
+        int dirtyWriteMisses = 0;
+        int bytesRead = 0;
+        int bytesWritten = 0;
         int totReadAccessTime;
         int totWriteAccessTime;
         int overallDataCacheMissRate;
+        int tempIntHolder;
+        int tempByteIntHolder;
+        String tempTagHolder;
         String tempString;
         String tempBinaryString;
+        String tempStringHolder;
         line tempLine;
 
-        ArrayList<line> cache = new ArrayList<line>(64);       //creating 64 blocks representing the cache-
-        for(int i = 0; i < cache.size(); i++) {                             //-indexes
-            tempLine = new line();
-            cache.add(tempLine);
-        }
 
         String path = args[0];                                              //taking arguments as the file path
         Scanner txtFile = new Scanner(new File(path));                      //put the file to be scanned
@@ -47,43 +46,74 @@ public class main {
         int numIndexes = (int) (Math.log(numBlocks) / Math.log(2));         //logbase2(#blocks) to get the index
         int tagBits = bitMemAddress - (numIndexes + offset);                //get tag by subtracting 32 -(index+offset)
 
-
+        ArrayList<line> cache = new ArrayList<line>(64);       //creating 64 blocks representing the cache-
+        for(int i = 0; i < 64; i++) {                                       //-indexes
+            tempLine = new line();
+            cache.add(tempLine);
+        }
 
 
         while (txtFile.hasNext()) {
             String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
 
             if (lineSplit[1].equals("W")) {                                //if 2nd element W then count write else-
-                dataWrites++;                                              //-count read
+                dataWrites++;                                              //-count read and the bytes as well
+                tempByteIntHolder = Integer.parseInt(lineSplit[3]);
+                bytesWritten += tempByteIntHolder;
             } else {
                 dataReads++;
+                tempByteIntHolder = Integer.parseInt(lineSplit[3]);
+                bytesRead += tempByteIntHolder;
             }
+
 
 
             tempString = lineSplit[2].substring(2);                        //getting the hexadecimal address
             tempBinaryString = hexToBinary(tempString);                    //convert hex to binary
-            tempLine = new line(tempBinaryString, offset, numIndexes);
+            tempLine = new line(tempBinaryString, offset, numIndexes);     //create object line that splits the binary
+            tempStringHolder = tempLine.getIndexBin();                     //get the index binary, and convert it to dec
+            tempIntHolder = binaryToDec(tempStringHolder);                 //getting index binary in decimal
+            tempTagHolder = tempLine.getTagBin();
 
-            //todo: get index number, check valid bit, check tag
+            if ((cache.get(tempIntHolder).isValidBit()) == 0) {            //check if valid bit is 0
+                cache.get(tempIntHolder).addTag(tempTagHolder);            //add  the tag
+                cache.get(tempIntHolder).setValidBit(1);                   //change the valid bit
+                if (lineSplit[1].equals("W")) {                            //since valid bit is 0 it will be a miss
+                    totDataWriteMisses++;
+                } else {
+                    totDataReadMisses++;
+                }
 
+            }else{
+                cache.get(tempIntHolder).compareTag(tempTagHolder);        //compare tag; add if no same tag
+                if (!cache.get(tempIntHolder).isHit() && lineSplit[1].equals("W")) {
+                    totDataWriteMisses++;
+                    dirtyWriteMisses++;
+                }
+                if (!cache.get(tempIntHolder).isHit() && lineSplit[1].equals("R")) {
+                    totDataReadMisses++;
+                    dirtyReadMisses++;
+                }
+            }
 
-            /*System.out.println(hexToBinary(tempString));
-
-            System.out.println(tempLine.getIndexBin());
-            System.out.println(tempLine.getTagBin());*/
-
-
-            /*System.out.println(lineSplit[2].substring(2));
-            tempString = lineSplit[2].substring(2);
-            System.out.println(hexToBinary(tempString));*/
 
         }
 
         dataAccess = dataReads + dataWrites;
+        totalMisses = totDataReadMisses + totDataWriteMisses;
 
-        System.out.println("number of data reads:\t" + dataReads
-                + "\nnumber of data writes:\t" + dataWrites
-                + "\nnumber of accesses:\t\t" + dataAccess);
+        System.out.println("Direct Mapped Cache, writeback, with size: " + StringCacheSize);
+
+        System.out.println("data reads: " + dataReads
+                + ", data writes: " + dataWrites
+                + ", total accesses: " + dataAccess
+        + "\nread misses: " + totDataReadMisses
+        +", write misses: " + totDataWriteMisses
+        +", total misses: " + totalMisses
+        +"\ndirty read misses: " + dirtyReadMisses
+        +", dirty write misses: " + dirtyWriteMisses
+        +"\nbytes read: " + bytesRead
+        +"\nbytes written: " + bytesWritten);
 
 
         System.out.println("\noffset:\t\t\t\t\t" + offset
@@ -110,5 +140,10 @@ public class main {
         return binary;
     }
 
+    public static int binaryToDec(String s) {
+        int tempNum;
+        tempNum = Integer.parseInt(s, 2);
+        return tempNum;
+    }
 }
 

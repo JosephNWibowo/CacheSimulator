@@ -4,7 +4,10 @@ import java.util.ArrayList;
  * Created by Joey on 5/3/2017.
  */
 public class line {
-    boolean validBit = false;
+    int validBit = 0;
+
+
+    boolean hit = false;
     String binary;
     String indexBin;
     String tempTagBin;
@@ -20,16 +23,6 @@ public class line {
         indexBin = binaryInput.substring(startBinIndex, endBinIndex);
         tempTagBin = binaryInput.substring(0, startBinIndex);
 
-        //todo: placement of this for each definitely wrong
-        /*for (tag eachTag : tagsInIndex) {
-            if (tempTagBin.equals(eachTag.getTagBinary())) {
-                System.out.println("hit!!");
-            } else {
-                System.out.println("miss!!");
-                tag tempTag = new tag(tempTagBin);
-                tagsInIndex.add(tempTag);
-            }
-        }*/
     }
 
     public line() {
@@ -39,11 +32,36 @@ public class line {
         tempTagBin= getTagBin();
     }
 
-    public boolean isValidBit() {
+    public void addTag(String tempTagBin) {
+        tag tempTag = new tag(tempTagBin);
+        tagsInIndex.add(tempTag);
+    }
+
+    public void compareTag(String tempTagBin) {
+        for (tag eachTag : tagsInIndex) {
+            if (tempTagBin.equals(eachTag.getTagBinary())) {
+                hit = true;
+            } else {
+                hit = false;
+                tag tempTag = new tag(tempTagBin);
+                tagsInIndex.add(tempTag);
+            }
+        }
+    }
+
+    public boolean isHit() {
+        return hit;
+    }
+
+    public void setHit(boolean hit) {
+        this.hit = hit;
+    }
+
+    public int isValidBit() {
         return validBit;
     }
 
-    public void setValidBit(boolean validBit) {
+    public void setValidBit(int validBit) {
         this.validBit = validBit;
     }
 
