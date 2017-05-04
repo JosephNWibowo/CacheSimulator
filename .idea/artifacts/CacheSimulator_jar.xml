@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CacheSimulator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CacheSimulator_jar</output-path>
+    <root id="archive" name="CacheSimulator.jar">
+      <element id="module-output" name="CacheSimulator" />
+    </root>
+  </artifact>
+</component>

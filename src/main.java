@@ -47,9 +47,10 @@ public class main {
         int numBlocks = intCacheSize / byteBlocks;                          //#blocks in cache
         int numIndexes = (int) (Math.log(numBlocks) / Math.log(2));         //logbase2(#blocks) to get the index
         int tagBits = bitMemAddress - (numIndexes + offset);                //get tag by subtracting 32 -(index+offset)
+        int cacheTotIndex = (int)Math.pow(2, numIndexes);
 
-        ArrayList<line> cache = new ArrayList<line>(64);       //creating 64 blocks representing the cache-
-        for(int i = 0; i < 64; i++) {                                       //-indexes
+        ArrayList<line> cache = new ArrayList<line>(cacheTotIndex);       //creating 64 blocks representing the cache-
+        for(int i = 0; i < cacheTotIndex; i++) {                                       //-indexes
             tempLine = new line();
             cache.add(tempLine);
         }
@@ -57,6 +58,14 @@ public class main {
 
         while (txtFile.hasNext()) {
             String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
+
+            tempString = lineSplit[2].substring(2);                        //getting the hexadecimal address
+            tempBinaryString = hexToBinary(tempString);                    //convert hex to binary
+            tempLine = new line(tempBinaryString, offset, numIndexes);     //create object line that splits the binary
+            tempStringHolder = tempLine.getIndexBin();                     //get the index binary, and convert it to dec
+            tempIntHolder = binaryToDec(tempStringHolder);                 //getting index binary in decimal
+            tempTagHolder = tempLine.getTagBin();
+
 
             if (lineSplit[1].equals("W")) {                                //if 2nd element W then count write else-
                 dataWrites++;                                              //-count read and the bytes as well
@@ -67,15 +76,6 @@ public class main {
                 tempByteIntHolder = Integer.parseInt(lineSplit[3]);
                 bytesRead += tempByteIntHolder;
             }
-
-
-
-            tempString = lineSplit[2].substring(2);                        //getting the hexadecimal address
-            tempBinaryString = hexToBinary(tempString);                    //convert hex to binary
-            tempLine = new line(tempBinaryString, offset, numIndexes);     //create object line that splits the binary
-            tempStringHolder = tempLine.getIndexBin();                     //get the index binary, and convert it to dec
-            tempIntHolder = binaryToDec(tempStringHolder);                 //getting index binary in decimal
-            tempTagHolder = tempLine.getTagBin();
 
             if ((cache.get(tempIntHolder).isValidBit()) == 0) {            //check if valid bit is 0
 

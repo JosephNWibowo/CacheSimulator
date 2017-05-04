@@ -5,8 +5,6 @@ import java.util.ArrayList;
  */
 public class line {
     int validBit = 0;
-
-
     boolean hit = false;
     String binary;
     String indexBin;
