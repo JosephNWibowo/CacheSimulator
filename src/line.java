@@ -38,15 +38,17 @@ public class line {
     }
 
     public void compareTag(String tempTagBin) {
-        for (tag eachTag : tagsInIndex) {
-            if (tempTagBin.equals(eachTag.getTagBinary())) {
+        for (int i = 0; i < tagsInIndex.size();i++) {
+            if (tempTagBin.equals(tagsInIndex.get(i).getTagBinary())) {
                 hit = true;
-            } else {
-                hit = false;
-                tag tempTag = new tag(tempTagBin);
-                tagsInIndex.add(tempTag);
             }
         }
+        if(!hit) {
+
+            tag tempTag = new tag(tempTagBin);
+            tagsInIndex.add(tempTag);
+        }
+
     }
 
     public boolean isHit() {

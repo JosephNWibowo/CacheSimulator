@@ -21,9 +21,11 @@ public class main {
         int dirtyWriteMisses = 0;
         int bytesRead = 0;
         int bytesWritten = 0;
-        int totReadAccessTime;
-        int totWriteAccessTime;
-        int overallDataCacheMissRate;
+        int missPenalty = 80;
+        int totReadTime = 0;
+        int totWriteTime = 0;
+        int totTime;
+        double MissRate;
         int tempIntHolder;
         int tempByteIntHolder;
         String tempTagHolder;
@@ -76,50 +78,65 @@ public class main {
             tempTagHolder = tempLine.getTagBin();
 
             if ((cache.get(tempIntHolder).isValidBit()) == 0) {            //check if valid bit is 0
-                cache.get(tempIntHolder).addTag(tempTagHolder);            //add  the tag
-                cache.get(tempIntHolder).setValidBit(1);                   //change the valid bit
+
                 if (lineSplit[1].equals("W")) {                            //since valid bit is 0 it will be a miss
                     totDataWriteMisses++;
+                    cache.get(tempIntHolder).addTag(tempTagHolder);        //add  the tag
+                    cache.get(tempIntHolder).setValidBit(1);               //change the valid bit
+                    totWriteTime = totWriteTime + (1 + missPenalty);
                 } else {
                     totDataReadMisses++;
+                    totReadTime = totReadTime + (1 + missPenalty);
                 }
 
-            }else{
+            } else {
                 cache.get(tempIntHolder).compareTag(tempTagHolder);        //compare tag; add if no same tag
-                if (!cache.get(tempIntHolder).isHit() && lineSplit[1].equals("W")) {
-                    totDataWriteMisses++;
-                    dirtyWriteMisses++;
+                if (!cache.get(tempIntHolder).isHit())
+                    if (lineSplit[1].equals("W")) {
+                        totDataWriteMisses++;
+                        dirtyWriteMisses++;
+                        totWriteTime = totWriteTime + (1 + (2 * missPenalty));
+                    } else {
+                        totDataReadMisses++;
+                        dirtyReadMisses++;
+                        totReadTime = totReadTime + (1 + (2 * missPenalty));
+                    }
+                if (cache.get(tempIntHolder).isHit()) {
+                    if (lineSplit[1].equals("W")) {
+                        totWriteTime++;
+                    } else {
+                        totReadTime++;
+                    }
                 }
-                if (!cache.get(tempIntHolder).isHit() && lineSplit[1].equals("R")) {
-                    totDataReadMisses++;
-                    dirtyReadMisses++;
-                }
+
             }
-
-
+            cache.get(tempIntHolder).setHit(false);
         }
 
         dataAccess = dataReads + dataWrites;
         totalMisses = totDataReadMisses + totDataWriteMisses;
+        totTime = totReadTime + totWriteTime;
+        MissRate = (double) totalMisses / dataAccess;
+
 
         System.out.println("Direct Mapped Cache, writeback, with size: " + StringCacheSize);
 
         System.out.println("data reads: " + dataReads
                 + ", data writes: " + dataWrites
                 + ", total accesses: " + dataAccess
-        + "\nread misses: " + totDataReadMisses
-        +", write misses: " + totDataWriteMisses
-        +", total misses: " + totalMisses
-        +"\ndirty read misses: " + dirtyReadMisses
-        +", dirty write misses: " + dirtyWriteMisses
-        +"\nbytes read: " + bytesRead
-        +"\nbytes written: " + bytesWritten);
+                + "\nread misses: " + totDataReadMisses
+                + ", write misses: " + totDataWriteMisses
+                + ", total misses: " + totalMisses
+                + "\ndirty read misses: " + dirtyReadMisses
+                + ", dirty write misses: " + dirtyWriteMisses
+                + "\nbytes read: " + bytesRead
+                + ", bytes written: " + bytesWritten
+                + "\nread time: " + totReadTime
+                + ", write time: " + totWriteTime
+                + ", total time: " + totTime
+                + "\nmiss rate: " + MissRate);
 
 
-        System.out.println("\noffset:\t\t\t\t\t" + offset
-                + "\nnumber of lines:\t\t" + numBlocks
-                + "\nnumber of indexes:\t\t" + numIndexes
-                + "\ntag bits:\t\t\t\t" + tagBits);
 
     }
 
