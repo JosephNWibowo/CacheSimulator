@@ -25,8 +25,14 @@ public class main {
         int totWriteAccessTime;
         int overallDataCacheMissRate;
         String tempString;
+        String tempBinaryString;
         line tempLine;
 
+        ArrayList<line> cache = new ArrayList<line>(64);       //creating 64 blocks representing the cache-
+        for(int i = 0; i < cache.size(); i++) {                             //-indexes
+            tempLine = new line();
+            cache.add(tempLine);
+        }
 
         String path = args[0];                                              //taking arguments as the file path
         Scanner txtFile = new Scanner(new File(path));                      //put the file to be scanned
@@ -42,7 +48,7 @@ public class main {
         int tagBits = bitMemAddress - (numIndexes + offset);                //get tag by subtracting 32 -(index+offset)
 
 
-        ArrayList<line> cache = new ArrayList<line>();
+
 
         while (txtFile.hasNext()) {
             String[] lineSplit = txtFile.nextLine().split("[: ]+");  //to remove colon and  multiple spaces
@@ -54,10 +60,12 @@ public class main {
             }
 
 
-            tempString = lineSplit[2].substring(2);
-            tempLine = new line(hexToBinary(tempString), offset, numIndexes, tagBits);
-            //todo: add conditional statements to add and compare indexes and tags to the line below
-            cache.add(tempLine);
+            tempString = lineSplit[2].substring(2);                        //getting the hexadecimal address
+            tempBinaryString = hexToBinary(tempString);                    //convert hex to binary
+            tempLine = new line(tempBinaryString, offset, numIndexes);
+
+            //todo: get index number, check valid bit, check tag
+
 
             /*System.out.println(hexToBinary(tempString));
 
